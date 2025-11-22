@@ -7,8 +7,12 @@ function App() {
   return (
     <div>
       <Header/>
+      <main style={{ padding: '20px', minHeight: '300px' }}>
+       
+        <Login />
+      </main>
       <Footer/>
-      <Login/>
+      
     </div>
   );
 }
