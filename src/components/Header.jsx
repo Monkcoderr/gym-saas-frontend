@@ -1,11 +1,16 @@
+// 1. Import Link
+import { Link } from 'react-router-dom';
+
 function Header() {
   return (
-    <header style={{ padding: '20px', backgroundColor: '#f0f0f0' }}>
+    <header style={{ padding: '10px', background: '#eee' }}>
       <nav>
-        <h3>Gym SaaS Manager</h3>
-        {/* We will make these links work later */}
-        <a href="#" style={{ marginRight: '10px' }}>Home</a>
-        <a href="#">Login</a>
+        {/* 2. Use Link instead of 'a' tags */}
+        {/* BAD: <a href="/">Home</a> */}
+        
+        {/* GOOD: */}
+        <Link to="/" style={{ margin: '10px' }}>Home</Link>
+        <Link to="/login">Login</Link>
       </nav>
     </header>
   );

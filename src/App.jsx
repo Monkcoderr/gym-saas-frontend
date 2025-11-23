@@ -1,4 +1,6 @@
-
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Login from "./components/Login";
@@ -7,11 +9,15 @@ function App() {
   return (
     <div>
       <Header/>
-      <main style={{ padding: '20px', minHeight: '300px' }}>
-       
-        <Login />
-      </main>
-      <Footer/>
+      <Routes>
+        
+        {/* RULE 1: If URL is "/" (root), show HomePage */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* RULE 2: If URL is "/login", show LoginPage */}
+        <Route path="/login" element={<LoginPage />} />
+
+      </Routes>
       
     </div>
   );
