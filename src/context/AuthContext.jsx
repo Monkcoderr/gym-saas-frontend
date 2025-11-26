@@ -1,52 +1,67 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-// 1. Create the Context
-const AuthContext = createContext();
+const Dashboard = () => {
+  const [members, setMembers] = useState([]);
+  const { user } = useAuth(); // Get the logged-in user (with token)
+  const navigate = useNavigate();
 
-// 2. Create the Provider Component
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  // Check localStorage on load
   useEffect(() => {
-    const storedUser = localStorage.getItem('userInfo');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  // Login Action
-  const login = async (email, password) => {
-    const response = await fetch('http://localhost:3000/api/users/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+    // 1. Security Check: If no user, kick them out!
+    if (!user) {
+      navigate('/login');
+      return;
     }
 
-    // Save to State AND LocalStorage
-    setUser(data);
-    localStorage.setItem('userInfo', JSON.stringify(data));
-    return data;
-  };
+    // 2. Define the fetch function
+    const fetchMembers = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/members', {
+          headers: {
+            // THE MOST IMPORTANT LINE: Attach the token!
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
 
-  // Logout Action
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('userInfo');
-  };
+        const data = await response.json();
+
+        if (response.ok) {
+          setMembers(data); // Save the members to state
+        } else {
+          console.error('Failed to fetch members');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchMembers();
+  }, [user, navigate]); // Run this whenever 'user' changes
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <div>
+      <h1>Gym Dashboard</h1>
+      <p>Welcome, {user && user.name}</p>
+
+      {members.length === 0 ? (
+        <p>No members found. Start adding some!</p>
+      ) : (
+        <ul>
+          {/* Loop through members and display them */}
+          {members.map((member) => (
+            <li 
+              key={member._id} 
+              style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}
+            >
+              <strong>{member.name}</strong> - {member.email} <br />
+              <small>Plan: {member.membershipPlan}</small>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };
 
-// 3. Custom Hook for easy access
-export const useAuth = () => useContext(AuthContext);
+export default Dashboard;

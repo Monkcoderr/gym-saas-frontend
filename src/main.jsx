@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import Login from './components/Login.jsx';
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx';
+import Dashboard from './context/AuthContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,11 @@ const router = createBrowserRouter([
         path : 'login',
         element :<Login/>
       },
+
+      {
+        path : 'dashboard',
+        element : <Dashboard/>
+      }
 
     ],
   },
